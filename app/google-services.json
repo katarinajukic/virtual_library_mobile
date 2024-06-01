@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "78165668789",
+    "project_id": "virtual-library-2420d",
+    "storage_bucket": "virtual-library-2420d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78165668789:android:21775759038b87a2299ffc",
+        "android_client_info": {
+          "package_name": "com.example.virtuallibrary"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOSDaspeGw4OIcpPlJHkwfnmy-fNSmxys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
