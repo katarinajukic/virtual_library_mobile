@@ -3,45 +3,37 @@ package com.example.virtuallibrary
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.virtuallibrary.auth.AuthViewModel
+import com.example.virtuallibrary.navigation.AppNavHost
+import com.example.virtuallibrary.navigation.ROUTE_LOGGED_OUT
 import com.example.virtuallibrary.ui.theme.VirtualLibraryTheme
 
 class MainActivity : ComponentActivity() {
+    private val authViewModel: AuthViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
+            VirtualLibraryApp()
+        }
+    }
+
+    @Composable
+    fun VirtualLibraryApp() {
+        val navController = rememberNavController()
+
+        Surface(color = Color.White) {
             VirtualLibraryTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppNavHost(navController = navController, startDestination = ROUTE_LOGGED_OUT, authViewModel = authViewModel)
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    VirtualLibraryTheme {
-        Greeting("Android")
-    }
-}
