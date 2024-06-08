@@ -1,5 +1,6 @@
 package com.example.virtuallibrary.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,7 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,12 +27,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
-import com.example.virtuallibrary.data.AuthRepository
 import com.example.virtuallibrary.ui.theme.DirtyWhite
 import com.example.virtuallibrary.ui.theme.GreenColor
 import com.example.virtuallibrary.ui.theme.robotoBold
@@ -36,15 +40,14 @@ import com.example.virtuallibrary.ui.theme.robotoBold
 @Composable
 fun RegisterScreen(
     navController: NavController,
-    authRepository: AuthRepository,
-    onRegisterSuccess: (String, String, String) -> Unit,
-    onNavigateToLogin: () -> Unit
+    authViewModel: AuthViewModel,
+    onRegisterSuccess: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    var message by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val authState by authViewModel.authState.observeAsState()
 
     Column(
         modifier = Modifier
@@ -129,16 +132,14 @@ fun RegisterScreen(
                 .padding(bottom = 16.dp)
         )
 
-        Button(onClick = {
-            authRepository.registerUser(name, email, password) { success, msg ->
-                if (success) {
-                    onRegisterSuccess(name, email, password)
-                    message = "Registration is successful!"
+        Button(
+            onClick = {
+                if (email.isNotBlank() && password.isNotBlank() && name.isNotBlank()) {
+                    authViewModel.register(name, email, password)
                 } else {
-                    message = msg ?: ""
+                    Toast.makeText(context, "Please enter name, email and password", Toast.LENGTH_SHORT).show()
                 }
-            }
-        },
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = GreenColor,
                 contentColor = Color.White
@@ -146,7 +147,8 @@ fun RegisterScreen(
             shape = MaterialTheme.shapes.medium.copy(CornerSize(6.dp)),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)) {
+                .height(50.dp)
+        ) {
             Text(
                 "REGISTER",
                 style = TextStyle(
@@ -156,15 +158,13 @@ fun RegisterScreen(
                 )
             )
         }
-        if (message.isNotEmpty()) {
-            Text(
-                text = message,
-                color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+        LaunchedEffect(authState) {
+            if (authState is AuthState.Registered) {
+                Toast.makeText(context, "Registered successfully", Toast.LENGTH_SHORT).show()
+                onRegisterSuccess()
+            } else if (authState is AuthState.Error) {
+                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
-
-
-
