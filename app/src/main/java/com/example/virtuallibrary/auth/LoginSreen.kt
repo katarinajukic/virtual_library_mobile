@@ -1,5 +1,6 @@
 package com.example.virtuallibrary.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
@@ -7,16 +8,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,29 +27,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavController
-import com.example.virtuallibrary.data.AuthRepository
 import com.example.virtuallibrary.ui.theme.DirtyWhite
 import com.example.virtuallibrary.ui.theme.GreenColor
-import com.example.virtuallibrary.ui.theme.comfortaaLight
 import com.example.virtuallibrary.ui.theme.robotoBold
-import java.security.AccessControlException
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    authRepository: AuthRepository,
-    onLoginSuccess: (String, String) -> Unit,
-    onNavigateToRegister: () -> Unit
+    authViewModel: AuthViewModel,
+    onLoginSuccess: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    var message by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val authState by authViewModel.authState.observeAsState()
 
     Column(
         modifier = Modifier
@@ -71,7 +70,7 @@ fun LoginScreen(
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.align(Alignment.Start)
 
-            )
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -118,12 +117,10 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                authRepository.loginUser(email, password) { success, msg ->
-                    if (success) {
-                        onLoginSuccess(email, password)
-                    } else {
-                        message = msg ?: "Incorrect password or email."
-                    }
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    authViewModel.signIn(email, password)
+                } else {
+                    Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
                 }
             },
             colors = ButtonDefaults.buttonColors(
@@ -144,16 +141,12 @@ fun LoginScreen(
                 )
             )
         }
-        if (message.isNotEmpty()) {
-            Text(
-                text = message,
-                color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+        LaunchedEffect(authState) {
+            if (authState is AuthState.Authenticated) {
+                onLoginSuccess()
+            } else if (authState is AuthState.Error) {
+                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
-
-
-
-

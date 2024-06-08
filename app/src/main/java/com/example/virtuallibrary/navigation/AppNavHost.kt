@@ -8,7 +8,6 @@ import com.example.virtuallibrary.auth.AuthViewModel
 import com.example.virtuallibrary.auth.LoggedOutScreen
 import com.example.virtuallibrary.auth.LoginScreen
 import com.example.virtuallibrary.auth.RegisterScreen
-import com.example.virtuallibrary.data.AuthRepository
 
 @Composable
 fun AppNavHost(
@@ -16,8 +15,6 @@ fun AppNavHost(
     startDestination: String,
     authViewModel: AuthViewModel
 ) {
-    val authRepository = AuthRepository()
-
     NavHost(navController = navController, startDestination = startDestination) {
         composable(ROUTE_LOGGED_OUT) {
             LoggedOutScreen(
@@ -26,18 +23,18 @@ fun AppNavHost(
             )
         }
         composable(ROUTE_LOGIN) {
-            LoginScreen(navController, authRepository, authViewModel::loginUser) {
+            LoginScreen(navController, authViewModel, onLoginSuccess = {
                 navController.navigate(ROUTE_HOME) {
                     popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 }
-            }
+            })
         }
         composable(ROUTE_SIGNUP) {
-            RegisterScreen(navController, authRepository, authViewModel::registerUser) {
-                navController.navigate(ROUTE_HOME) {
+            RegisterScreen(navController, authViewModel, onRegisterSuccess = {
+                navController.navigate(ROUTE_LOGIN) {
                     popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 }
-            }
+            })
         }
         composable(ROUTE_HOME) {
             // HomeScreen or any other authenticated screen
