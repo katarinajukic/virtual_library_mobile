@@ -12,6 +12,7 @@ import com.example.virtuallibrary.auth.AuthViewModel
 import com.example.virtuallibrary.auth.LoggedOutScreen
 import com.example.virtuallibrary.auth.LoginScreen
 import com.example.virtuallibrary.auth.RegisterScreen
+import com.example.virtuallibrary.screen.BookDetailsScreen
 import com.example.virtuallibrary.screen.HomeScreen
 import com.example.virtuallibrary.screen.SearchScreen
 import com.example.virtuallibrary.viewmodel.BookViewModel
@@ -32,7 +33,7 @@ fun AppNavHost(
         }
         composable(ROUTE_LOGIN) {
             LoginScreen(navController, authViewModel, onLoginSuccess = {
-                navController.navigate(ROUTE_HOME) {
+                navController.navigate(ROUTE_SEARCH) {
                     popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 }
             })
@@ -44,12 +45,24 @@ fun AppNavHost(
                 }
             })
         }
-        composable(ROUTE_HOME) {
-            HomeScreen(navController, authViewModel)        }
+        composable(route = "$ROUTE_HOME?q={query}") { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            HomeScreen(navController, authViewModel, query)
+        }
 
         composable(ROUTE_SEARCH) {
-            SearchScreen(navController, bookViewModel)
+            SearchScreen(navController, bookViewModel) { query ->
+                navController.navigate(route = "$ROUTE_HOME?q=$query") {
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                }
+            }
         }
+
+        composable(route = "$ROUTE_BOOK_DETAILS/{bookId}") { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId") ?: ""
+            BookDetailsScreen(navController, bookId)
+        }
+
 
         composable(ROUTE_FAVOURITES) {
             // Placeholder composable for the favorites screen

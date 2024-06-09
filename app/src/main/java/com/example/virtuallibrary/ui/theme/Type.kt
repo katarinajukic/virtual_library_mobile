@@ -18,6 +18,14 @@ val comfortaaLight = FontFamily(
     Font(R.font.comfortaalight, FontWeight.Light)
 )
 
+val robotoThin = FontFamily(
+    Font(R.font.robotothin, FontWeight.Light)
+)
+
+val robotoRegular = FontFamily(
+    Font(R.font.robotoregular, FontWeight.Light)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
