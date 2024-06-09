@@ -14,9 +14,11 @@ import com.example.virtuallibrary.auth.AuthViewModel
 import com.example.virtuallibrary.navigation.AppNavHost
 import com.example.virtuallibrary.navigation.ROUTE_LOGGED_OUT
 import com.example.virtuallibrary.ui.theme.VirtualLibraryTheme
+import com.example.virtuallibrary.viewmodel.BookViewModel
 
 class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
+    private val bookViewModel: BookViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,7 @@ class MainActivity : ComponentActivity() {
 
         Surface(color = Color.White) {
             VirtualLibraryTheme {
-                AppNavHost(navController = navController, startDestination = ROUTE_LOGGED_OUT, authViewModel = authViewModel)
+                AppNavHost(navController = navController, startDestination = ROUTE_LOGGED_OUT, authViewModel = authViewModel, bookViewModel = bookViewModel)
             }
         }
     }
