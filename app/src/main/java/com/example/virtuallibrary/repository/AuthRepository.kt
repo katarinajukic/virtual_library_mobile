@@ -23,4 +23,8 @@ class AuthRepository(private val firebaseAuth: FirebaseAuth = FirebaseAuth.getIn
             Result.failure(e)
         }
     }
+
+    fun signOut() {
+        firebaseAuth.signOut()
+    }
 }

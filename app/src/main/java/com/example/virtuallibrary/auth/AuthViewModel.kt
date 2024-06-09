@@ -18,7 +18,8 @@ class AuthViewModel(private val authRepository: AuthRepository = AuthRepository(
             if (result.isSuccess) {
                 _authState.value = AuthState.Authenticated
             } else {
-                _authState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Login failed")
+                _authState.value =
+                    AuthState.Error(result.exceptionOrNull()?.message ?: "Login failed")
             }
         }
     }
@@ -29,8 +30,16 @@ class AuthViewModel(private val authRepository: AuthRepository = AuthRepository(
             if (result.isSuccess) {
                 _authState.value = AuthState.Registered
             } else {
-                _authState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Registration failed")
+                _authState.value =
+                    AuthState.Error(result.exceptionOrNull()?.message ?: "Registration failed")
             }
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            authRepository.signOut()
+            _authState.value = AuthState.LoggedOut
         }
     }
 }
@@ -38,6 +47,7 @@ class AuthViewModel(private val authRepository: AuthRepository = AuthRepository(
 sealed class AuthState {
     object Authenticated : AuthState()
     object Registered : AuthState()
+    object LoggedOut : AuthState()
     data class Error(val message: String) : AuthState()
 }
 

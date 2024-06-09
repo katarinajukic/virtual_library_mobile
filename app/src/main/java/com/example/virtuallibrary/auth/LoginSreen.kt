@@ -69,7 +69,6 @@ fun LoginScreen(
             text = "Log in",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.align(Alignment.Start)
-
         )
 
         Spacer(modifier = Modifier.height(32.dp))
