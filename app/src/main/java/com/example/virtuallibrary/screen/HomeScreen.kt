@@ -1,7 +1,12 @@
 package com.example.virtuallibrary.screen
 
 import android.util.Log
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -25,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.virtuallibrary.R
 import com.example.virtuallibrary.api.ApiClient
 import com.example.virtuallibrary.auth.AuthViewModel
 import com.example.virtuallibrary.navigation.ROUTE_FAVOURITES
@@ -34,7 +40,6 @@ import com.example.virtuallibrary.navigation.ROUTE_SEARCH
 import com.example.virtuallibrary.ui.theme.GreenColor
 import com.example.virtuallibrary.viewmodel.BookViewModel
 import kotlinx.coroutines.launch
-import com.example.virtuallibrary.R
 
 
 @Composable
@@ -99,11 +104,15 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel, query
             Text(
                 text = "Virtual Library",
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.align(Alignment.Start).padding(it).padding(start = 16.dp, bottom = 13.dp)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(it)
+                    .padding(start = 16.dp, bottom = 13.dp)
             )
             Divider(color = GreenColor, thickness = 1.dp)
-            LazyColumn(modifier = Modifier
-                .fillMaxSize()
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
                 items(books) { book ->
                     Log.d("HomeScreen", "Displaying book: ${book.volumeInfo.title}, ${book.id}")

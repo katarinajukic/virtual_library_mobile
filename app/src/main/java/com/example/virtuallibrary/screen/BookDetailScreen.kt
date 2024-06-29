@@ -4,7 +4,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
@@ -15,7 +23,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +48,9 @@ import com.example.virtuallibrary.ui.theme.comfortaaLight
 import com.example.virtuallibrary.ui.theme.robotoBold
 import com.example.virtuallibrary.ui.theme.robotoRegular
 import com.example.virtuallibrary.viewmodel.BookViewModel
+import com.example.virtuallibrary.viewmodel.FavoriteViewModel
 import com.example.virtuallibrary.viewmodel.NotificationViewModel
+import com.example.virtuallibrary.viewmodel.RentalViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -42,15 +59,19 @@ import java.util.Locale
 
 @Composable
 fun BookDetailsScreen(navController: NavController, bookId: String) {
-    val viewModel = remember { BookViewModel(ApiClient.bookApiService) }
+    val bookViewModel = remember { BookViewModel(ApiClient.bookApiService) }
+    val favoriteViewModel = remember { FavoriteViewModel() }
+    val rentalViewModel = remember { RentalViewModel() }
     val notificationViewModel = remember { NotificationViewModel() }
-    val book by viewModel.book.collectAsState()
+
+    val book by bookViewModel.book.collectAsState()
     var isFavorite by remember { mutableStateOf(false) }
-    val rentals by viewModel.rentals.collectAsState()
+    val rentals by rentalViewModel.rentals.collectAsState()
     val availableCopies = 5
 
     val rentedCopies = rentals.count { it.bookId == bookId && it.status == "approved" }
-    val userRental = rentals.find { it.bookId == bookId && it.userId == FirebaseAuth.getInstance().currentUser?.uid }
+    val userRental =
+        rentals.find { it.bookId == bookId && it.userId == FirebaseAuth.getInstance().currentUser?.uid }
     val isAvailable = (availableCopies - rentedCopies) > 0
 
     val scope = rememberCoroutineScope()
@@ -60,7 +81,7 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
         if (book == null) {
             scope.launch {
                 try {
-                    viewModel.fetchBookById(bookId)
+                    bookViewModel.fetchBookById(bookId)
                 } catch (e: Exception) {
                     Log.e("BookDetailsScreen", "Error fetching book: ${e.message}", e)
                 }
@@ -116,7 +137,8 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                         Text(
-                            text = book?.volumeInfo?.authors?.joinToString(", ") ?: "Unknown Author",
+                            text = book?.volumeInfo?.authors?.joinToString(", ")
+                                ?: "Unknown Author",
                             style = TextStyle(
                                 fontFamily = comfortaaLight,
                                 fontSize = 20.sp,
@@ -129,7 +151,8 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = book?.volumeInfo?.description?.replace(Regex("<[^>]*>"), "") ?: "No description available.",
+                    text = book?.volumeInfo?.description?.replace(Regex("<[^>]*>"), "")
+                        ?: "No description available.",
                     style = TextStyle(
                         fontFamily = robotoRegular,
                         fontSize = 20.sp,
@@ -148,13 +171,18 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
                         if (userRental == null) {
                             if (isAvailable) {
-                                viewModel.requestRental(userId, book!!, {
+                                rentalViewModel.requestRental(userId, book!!, {
                                     notificationViewModel.showRentalNotification(
                                         context,
                                         "Rental Request Approved",
-                                        "You have 3 days to pick up the book and have to return it by ${SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-                                            Date(System.currentTimeMillis() + (14 * 24 * 60 * 60 * 1000))
-                                        )}."
+                                        "You have 3 days to pick up the book and have to return it by ${
+                                            SimpleDateFormat(
+                                                "yyyy-MM-dd",
+                                                Locale.getDefault()
+                                            ).format(
+                                                Date(System.currentTimeMillis() + (14 * 24 * 60 * 60 * 1000))
+                                            )
+                                        }."
                                     )
                                 }, { exception ->
                                     if (exception.message == "You have reached the maximum limit of 5 rentals.") {
@@ -179,7 +207,7 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                                 )
                             }
                         } else {
-                            viewModel.cancelRental(userId, bookId, {
+                            rentalViewModel.cancelRental(userId, bookId, {
                                 notificationViewModel.showRentalNotification(
                                     context,
                                     "Rental Request Canceled",
@@ -220,10 +248,11 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
 
                         if (isFavorite) {
-                            viewModel.removeFavorite(userId, bookId)
-                            Toast.makeText(context, "Removed from Favorites", Toast.LENGTH_SHORT).show()
+                            favoriteViewModel.removeFavorite(userId, bookId)
+                            Toast.makeText(context, "Removed from Favorites", Toast.LENGTH_SHORT)
+                                .show()
                         } else {
-                            viewModel.addFavorite(userId, book!!)
+                            favoriteViewModel.addFavorite(userId, book!!)
                             Toast.makeText(context, "Added to Favorites", Toast.LENGTH_SHORT).show()
                         }
                         isFavorite = !isFavorite

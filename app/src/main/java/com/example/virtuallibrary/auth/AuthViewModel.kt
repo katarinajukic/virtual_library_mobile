@@ -1,12 +1,11 @@
 package com.example.virtuallibrary.auth
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.virtuallibrary.repository.AuthRepository
-import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class AuthViewModel(private val authRepository: AuthRepository = AuthRepository()) : ViewModel() {
 

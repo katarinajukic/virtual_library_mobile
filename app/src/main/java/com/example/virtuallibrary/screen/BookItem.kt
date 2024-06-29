@@ -57,7 +57,10 @@ fun BookItem(book: Book, navController: NavController) {
         Spacer(modifier = Modifier.width(1.dp))
         Column {
             Text(book.volumeInfo.title, style = MaterialTheme.typography.titleMedium)
-            Text(book.volumeInfo.authors?.joinToString(", ") ?: "Unknown Author", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                book.volumeInfo.authors?.joinToString(", ") ?: "Unknown Author",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
     Divider(color = GreenColor, thickness = 1.dp)

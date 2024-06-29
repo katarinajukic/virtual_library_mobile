@@ -12,4 +12,4 @@ val Pink40 = Color(0xFF7D5260)
 
 //custom colors
 val GreenColor = Color(0xFF81806A)
-val DirtyWhite = Color( 	0xFFEAE7E6)
+val DirtyWhite = Color(0xFFEAE7E6)
