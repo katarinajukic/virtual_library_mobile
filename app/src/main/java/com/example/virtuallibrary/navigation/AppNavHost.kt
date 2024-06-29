@@ -11,6 +11,7 @@ import com.example.virtuallibrary.auth.RegisterScreen
 import com.example.virtuallibrary.screen.BookDetailsScreen
 import com.example.virtuallibrary.screen.FavouritesScreen
 import com.example.virtuallibrary.screen.HomeScreen
+import com.example.virtuallibrary.screen.RentalsScreen
 import com.example.virtuallibrary.screen.SearchScreen
 import com.example.virtuallibrary.viewmodel.BookViewModel
 
@@ -63,6 +64,10 @@ fun AppNavHost(
 
         composable(ROUTE_FAVOURITES) {
             FavouritesScreen(navController, bookViewModel)
+        }
+
+        composable(ROUTE_RENTALS) {
+            RentalsScreen(navController, bookViewModel)
         }
     }
 }
