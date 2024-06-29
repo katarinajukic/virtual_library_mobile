@@ -6,11 +6,14 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.virtuallibrary.repository.AuthRepository
+import com.google.firebase.auth.FirebaseAuth
 
-class AuthViewModel(private val authRepository: AuthRepository = AuthRepository()) : ViewModel() {
+class AuthViewModel(private val authRepository: AuthRepository = AuthRepository(), private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()) : ViewModel() {
 
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> get() = _authState
+    val currentUser: String?
+        get() = firebaseAuth.currentUser?.uid
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
