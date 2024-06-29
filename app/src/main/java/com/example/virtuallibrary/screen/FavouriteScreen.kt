@@ -30,11 +30,11 @@ import com.example.virtuallibrary.model.Book
 import com.example.virtuallibrary.model.ImageLinks
 import com.example.virtuallibrary.model.VolumeInfo
 import com.example.virtuallibrary.ui.theme.GreenColor
-import com.example.virtuallibrary.viewmodel.BookViewModel
+import com.example.virtuallibrary.viewmodel.FavoriteViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun FavouritesScreen(navController: NavController, viewModel: BookViewModel) {
+fun FavouritesScreen(navController: NavController, viewModel: FavoriteViewModel) {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val favorites by viewModel.favorites.collectAsState()
 
@@ -60,7 +60,9 @@ fun FavouritesScreen(navController: NavController, viewModel: BookViewModel) {
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues).padding(16.dp)
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
         ) {
             Text(
                 text = "Favourites",

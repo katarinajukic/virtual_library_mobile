@@ -13,14 +13,16 @@ import com.example.virtuallibrary.screen.FavouritesScreen
 import com.example.virtuallibrary.screen.HomeScreen
 import com.example.virtuallibrary.screen.RentalsScreen
 import com.example.virtuallibrary.screen.SearchScreen
-import com.example.virtuallibrary.viewmodel.BookViewModel
+import com.example.virtuallibrary.viewmodel.FavoriteViewModel
+import com.example.virtuallibrary.viewmodel.RentalViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     startDestination: String,
     authViewModel: AuthViewModel,
-    bookViewModel: BookViewModel
+    favoriteViewModel: FavoriteViewModel,
+    rentalViewModel: RentalViewModel
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
         composable(ROUTE_LOGGED_OUT) {
@@ -63,11 +65,11 @@ fun AppNavHost(
 
 
         composable(ROUTE_FAVOURITES) {
-            FavouritesScreen(navController, bookViewModel)
+            FavouritesScreen(navController, favoriteViewModel)
         }
 
         composable(ROUTE_RENTALS) {
-            RentalsScreen(navController, bookViewModel)
+            RentalsScreen(navController, rentalViewModel)
         }
     }
 }

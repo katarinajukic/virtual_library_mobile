@@ -1,7 +1,7 @@
 package com.example.virtuallibrary.repository
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository(private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()) {

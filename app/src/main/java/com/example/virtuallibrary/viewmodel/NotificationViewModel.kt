@@ -22,7 +22,8 @@ class NotificationViewModel() : ViewModel() {
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = desc
             }
-            val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
