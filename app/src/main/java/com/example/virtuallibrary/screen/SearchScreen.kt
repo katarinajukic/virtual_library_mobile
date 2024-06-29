@@ -8,14 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -31,15 +26,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.virtuallibrary.navigation.ROUTE_HOME
 import com.example.virtuallibrary.ui.theme.DirtyWhite
 import com.example.virtuallibrary.ui.theme.GreenColor
 import com.example.virtuallibrary.ui.theme.robotoBold
-import com.example.virtuallibrary.viewmodel.BookViewModel
 
 @Composable
-fun SearchScreen(navController: NavController, viewModel: BookViewModel, onSearch: (String) -> Unit) {
+fun SearchScreen(onSearch: (String) -> Unit) {
     var query by remember { mutableStateOf("") }
 
     Column(

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.virtuallibrary.api.ApiClient
 import com.example.virtuallibrary.auth.AuthViewModel
-import com.example.virtuallibrary.navigation.ROUTE_BOOK_DETAILS
 import com.example.virtuallibrary.navigation.ROUTE_FAVOURITES
 import com.example.virtuallibrary.navigation.ROUTE_LOGGED_OUT
 import com.example.virtuallibrary.navigation.ROUTE_SEARCH

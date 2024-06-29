@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.virtuallibrary.repository.AuthRepository
+import com.google.firebase.auth.FirebaseAuth
 
 class AuthViewModel(private val authRepository: AuthRepository = AuthRepository()) : ViewModel() {
 

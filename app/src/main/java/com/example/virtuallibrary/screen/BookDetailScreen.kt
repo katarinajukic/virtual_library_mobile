@@ -35,13 +35,14 @@ import com.example.virtuallibrary.ui.theme.comfortaaLight
 import com.example.virtuallibrary.ui.theme.robotoBold
 import com.example.virtuallibrary.ui.theme.robotoRegular
 import com.example.virtuallibrary.viewmodel.BookViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 @Composable
 fun BookDetailsScreen(navController: NavController, bookId: String) {
-    Log.d("BookDetailsScreen", "Requested book ID: $bookId")
     val viewModel = remember { BookViewModel(ApiClient.bookApiService) }
     val book by viewModel.book.collectAsState()
+    var isFavorite by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -56,6 +57,10 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                 }
             }
         }
+    }
+
+    LaunchedEffect(book) {
+        isFavorite = book?.isFavorite ?: false
     }
 
     if (book != null) {
@@ -153,7 +158,19 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* Handle Add to Favourites */ },
+                    onClick = {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
+
+                        if (isFavorite) {
+                            viewModel.removeFavorite(userId, bookId)
+                            Toast.makeText(context, "Removed from Favorites", Toast.LENGTH_SHORT).show()
+                        } else {
+                            viewModel.addFavorite(userId, book!!)
+                            Toast.makeText(context, "Added to Favorites", Toast.LENGTH_SHORT).show()
+                        }
+                        isFavorite = !isFavorite
+                        Log.d("BookDetailsScreen", "isFavorite toggled: $isFavorite")
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = GreenColor
@@ -165,38 +182,7 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                         .height(50.dp)
                 ) {
                     Text(
-                        "ADD TO FAVOURITES",
-                        style = TextStyle(
-                            fontFamily = robotoBold,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        val pdfDownloadLink = book?.accessInfo?.pdf?.downloadLink
-                        if (pdfDownloadLink != null) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pdfDownloadLink))
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            context.startActivity(intent)
-                        } else {
-                            Toast.makeText(context, "No PDF version available", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenColor,
-                        contentColor = Color.White
-                    ),
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(6.dp)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Text(
-                        "DOWNLOAD PDF VERSION",
+                        text = if (isFavorite) "REMOVE FROM FAVORITES" else "ADD TO FAVORITES",
                         style = TextStyle(
                             fontFamily = robotoBold,
                             fontSize = 13.sp,
