@@ -5,6 +5,5 @@ data class Favorite(
     var bookId: String = "",
     var title: String = "",
     var author: String = "",
-    val imageUrl: String = "",
-    var isFavorite: Boolean = false
+    val imageUrl: String = ""
 )

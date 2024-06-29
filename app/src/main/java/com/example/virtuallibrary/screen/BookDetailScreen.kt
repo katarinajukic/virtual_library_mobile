@@ -190,7 +190,6 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                         )
                     )
                 }
-
             }
         }
     } else {

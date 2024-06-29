@@ -48,7 +48,7 @@ fun AppNavHost(
         }
 
         composable(ROUTE_SEARCH) {
-            SearchScreen(navController, bookViewModel) { query ->
+            SearchScreen { query ->
                 navController.navigate(route = "$ROUTE_HOME?q=$query") {
                     popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 }

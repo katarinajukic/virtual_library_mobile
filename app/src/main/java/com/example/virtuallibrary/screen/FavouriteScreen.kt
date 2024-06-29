@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.virtuallibrary.model.Book
-import com.example.virtuallibrary.model.Favorite
 import com.example.virtuallibrary.model.ImageLinks
 import com.example.virtuallibrary.model.VolumeInfo
 import com.example.virtuallibrary.ui.theme.GreenColor

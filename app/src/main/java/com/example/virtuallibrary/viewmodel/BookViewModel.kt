@@ -120,7 +120,6 @@ class BookViewModel(private val apiService: BookApiService) : ViewModel() {
                     .set(favorite)
                     .addOnSuccessListener {
                         Log.d("addFavorite", "Successfully added favorite: $favorite")
-                        // Update _favorites state flow after successful addition
                         _favorites.value += favorite
                     }
                     .addOnFailureListener { e ->
@@ -142,7 +141,6 @@ class BookViewModel(private val apiService: BookApiService) : ViewModel() {
                     .delete()
                     .addOnSuccessListener {
                         Log.d("removeFavorite", "Successfully removed favorite: $bookId")
-                        // Update _favorites state flow after successful removal
                         _favorites.value = _favorites.value.filter { it.bookId != bookId }
                     }
                     .addOnFailureListener { e ->
