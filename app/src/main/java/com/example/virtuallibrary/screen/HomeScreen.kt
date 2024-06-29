@@ -22,16 +22,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.virtuallibrary.api.ApiClient
 import com.example.virtuallibrary.auth.AuthViewModel
 import com.example.virtuallibrary.navigation.ROUTE_FAVOURITES
 import com.example.virtuallibrary.navigation.ROUTE_LOGGED_OUT
+import com.example.virtuallibrary.navigation.ROUTE_RENTALS
 import com.example.virtuallibrary.navigation.ROUTE_SEARCH
 import com.example.virtuallibrary.ui.theme.GreenColor
 import com.example.virtuallibrary.viewmodel.BookViewModel
 import kotlinx.coroutines.launch
+import com.example.virtuallibrary.R
+
 
 @Composable
 fun HomeScreen(navController: NavController, authViewModel: AuthViewModel, query: String) {
@@ -68,6 +72,15 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel, query
                     }) {
                         Icon(Icons.Filled.Favorite, contentDescription = "Favorites")
                     }
+                }
+
+                IconButton(onClick = {
+                    navController.navigate(ROUTE_RENTALS)
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.rentals_icon),
+                        contentDescription = "Rentals"
+                    )
                 }
 
                 IconButton(onClick = {

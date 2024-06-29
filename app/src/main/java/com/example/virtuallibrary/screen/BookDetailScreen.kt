@@ -1,7 +1,5 @@
 package com.example.virtuallibrary.screen
 
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -35,14 +33,25 @@ import com.example.virtuallibrary.ui.theme.comfortaaLight
 import com.example.virtuallibrary.ui.theme.robotoBold
 import com.example.virtuallibrary.ui.theme.robotoRegular
 import com.example.virtuallibrary.viewmodel.BookViewModel
+import com.example.virtuallibrary.viewmodel.NotificationViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun BookDetailsScreen(navController: NavController, bookId: String) {
     val viewModel = remember { BookViewModel(ApiClient.bookApiService) }
+    val notificationViewModel = remember { NotificationViewModel() }
     val book by viewModel.book.collectAsState()
     var isFavorite by remember { mutableStateOf(false) }
+    val rentals by viewModel.rentals.collectAsState()
+    val availableCopies = 5
+
+    val rentedCopies = rentals.count { it.bookId == bookId && it.status == "approved" }
+    val userRental = rentals.find { it.bookId == bookId && it.userId == FirebaseAuth.getInstance().currentUser?.uid }
+    val isAvailable = (availableCopies - rentedCopies) > 0
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -135,7 +144,56 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* Handle Request Rental */ },
+                    onClick = {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@Button
+                        if (userRental == null) {
+                            if (isAvailable) {
+                                viewModel.requestRental(userId, book!!, {
+                                    notificationViewModel.showRentalNotification(
+                                        context,
+                                        "Rental Request Approved",
+                                        "You have 3 days to pick up the book and have to return it by ${SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
+                                            Date(System.currentTimeMillis() + (14 * 24 * 60 * 60 * 1000))
+                                        )}."
+                                    )
+                                }, { exception ->
+                                    if (exception.message == "You have reached the maximum limit of 5 rentals.") {
+                                        notificationViewModel.showRentalNotification(
+                                            context,
+                                            "Rental Limit Reached",
+                                            "You cannot rent more than 5 books at a time."
+                                        )
+                                    } else {
+                                        notificationViewModel.showRentalNotification(
+                                            context,
+                                            "Rental Request Failed",
+                                            "Failed to request rental: ${exception.message}"
+                                        )
+                                    }
+                                })
+                            } else {
+                                notificationViewModel.showRentalNotification(
+                                    context,
+                                    "Rental Not Available",
+                                    "No copies available for rent."
+                                )
+                            }
+                        } else {
+                            viewModel.cancelRental(userId, bookId, {
+                                notificationViewModel.showRentalNotification(
+                                    context,
+                                    "Rental Request Canceled",
+                                    "Your rental request has been canceled."
+                                )
+                            }, { exception ->
+                                notificationViewModel.showRentalNotification(
+                                    context,
+                                    "Cancellation Failed",
+                                    "Failed to cancel rental: ${exception.message}"
+                                )
+                            })
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenColor,
                         contentColor = Color.White
@@ -146,7 +204,7 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
                         .height(50.dp)
                 ) {
                     Text(
-                        "REQUEST RENTAL",
+                        text = if (userRental == null) "REQUEST RENTAL" else "CANCEL RENTAL REQUEST",
                         style = TextStyle(
                             fontFamily = robotoBold,
                             fontSize = 13.sp,
@@ -196,5 +254,3 @@ fun BookDetailsScreen(navController: NavController, bookId: String) {
         Text("Loading...", modifier = Modifier.padding(16.dp))
     }
 }
-
-
